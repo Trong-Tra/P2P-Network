@@ -1,0 +1,20 @@
+# Ignore node_modules for Node.js projects
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE-specific files
+.vscode/
+
+# Ignore environment variables
+.env
+
+# Package manager lock files
+package-lock.json
+
+# Coverage reports
+coverage/
+
