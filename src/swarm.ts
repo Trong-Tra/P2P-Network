@@ -52,5 +52,10 @@ export default class Swarm {
         this.swarm.addEventListener('peer:disconnect', ({ detail }) => {
             console.info('💔 Disconnected to', detail.toString())
         })
+
+        // Stop
+        this.swarm.addEventListener('stop', () => {
+            console.info('⛔️ The node is terminated')
+        })
     }
 }
