@@ -16,10 +16,11 @@ import { type KadDHT, kadDHT, passthroughMapper } from '@libp2p/kad-dht'
 import { bootstrap } from '@libp2p/bootstrap'
 
 import { PORT } from './config'
+import { privateKeyFromProtobuf } from '@libp2p/crypto/keys'
 
 export type SwarmProps = Libp2p<{
     identify: Identify
-    identifyPysh: IdentifyPush
+    identifyPush: IdentifyPush
     pubsub: PubSub<GossipsubEvents>
     dht: KadDHT
 }>
@@ -57,5 +58,36 @@ export default class Swarm {
         this.swarm.addEventListener('stop', () => {
             console.info('⛔️ The node is terminated')
         })
+    }
+
+    static new = async <E extends PrivateKey>(privateKey: E) => {
+        const swarm = await createLibp2p({
+            start: false,
+            privateKey,
+            addresses: {
+                listen: ['/ip4/0.0.0.0/tcp/${PORT}']
+            },
+            transports: [tcp()],
+            streamMuxers: [yamux()],
+            connectionEncrypters: [noise()],
+            peerDiscovery: [
+                bootstrap({
+                    list: [
+                        '/ip4/13.238.141.54/tcp/8000/p2p/16Uiu2HAmDeYxA7kGADGhPBHeQTCheqB6qfpWFc1GHJu1niosGyRK',
+                    ],
+                }),
+            ],
+            services: {
+                identify: identify(),
+                identifyPush: identifyPush(),
+                pubsub: gossipsub(),
+                dht: kadDHT({
+                    clientMode: false,
+                    peerInfoMapper: passthroughMapper,
+                }),
+            },
+        })
+
+        return new Swarm(swarm)
     }
 }
