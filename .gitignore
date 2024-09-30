@@ -18,3 +18,5 @@ package-lock.json
 # Coverage reports
 coverage/
 
+# Prettier 
+.prettierrc
