@@ -16,7 +16,6 @@ import { type KadDHT, kadDHT, passthroughMapper } from '@libp2p/kad-dht'
 import { bootstrap } from '@libp2p/bootstrap'
 
 import { PORT } from './config'
-import { privateKeyFromProtobuf } from '@libp2p/crypto/keys'
 
 export type SwarmProps = Libp2p<{
     identify: Identify
@@ -25,6 +24,9 @@ export type SwarmProps = Libp2p<{
     dht: KadDHT
 }>
 
+/**
+ * @description Swarm representing a P2P node
+ */
 export default class Swarm {
     constructor(public readonly swarm: SwarmProps) {
         // Start
@@ -60,12 +62,19 @@ export default class Swarm {
         })
     }
 
+    /**
+     * @dev this method create a new Swarm
+     * @note node listen on a specific IP and port using TCP
+     * @note node descover and connect peers via bootstrap
+     * @note method using noise for encryption and yamux for multiplexing
+     * @param privateKey for establishing the node's identiry
+     */
     static new = async <E extends PrivateKey>(privateKey: E) => {
         const swarm = await createLibp2p({
-            start: false,
+            start: false, // manually start 
             privateKey,
             addresses: {
-                listen: ['/ip4/0.0.0.0/tcp/${PORT}']
+                listen: ['/ip4/0.0.0.0/tcp/${PORT}'] // use tcp protocol
             },
             transports: [tcp()],
             streamMuxers: [yamux()],
